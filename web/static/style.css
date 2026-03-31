@@ -1,0 +1,477 @@
+/* ============================================================================
+   style.css — Modern UI Styling for Traffic Sign Recognition Web App
+   ============================================================================ */
+
+/* ── CSS Custom Properties (Design Tokens) ─────────────────────────────── */
+:root {
+    --bg-primary:       #0f0f1a;
+    --bg-secondary:     #1a1a2e;
+    --bg-card:          rgba(30, 30, 50, 0.85);
+    --bg-glass:         rgba(255, 255, 255, 0.04);
+    --text-primary:     #e8e8f0;
+    --text-secondary:   #9a9ab0;
+    --text-muted:       #6a6a80;
+    --accent-primary:   #6c63ff;
+    --accent-secondary: #00d4aa;
+    --accent-gradient:  linear-gradient(135deg, #6c63ff, #00d4aa);
+    --success:          #4CAF50;
+    --warning:          #FF9800;
+    --danger:           #F44336;
+    --border-color:     rgba(255, 255, 255, 0.08);
+    --shadow-soft:      0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-glow:      0 0 40px rgba(108, 99, 255, 0.15);
+    --radius-sm:        8px;
+    --radius-md:        16px;
+    --radius-lg:        24px;
+    --font-family:      'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --transition:       all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Global Reset & Base ───────────────────────────────────────────────── */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* ── Animated Background ───────────────────────────────────────────────── */
+.bg-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(108, 99, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(0, 212, 170, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(108, 99, 255, 0.06) 0%, transparent 50%);
+    animation: bgShift 12s ease-in-out infinite alternate;
+}
+
+@keyframes bgShift {
+    0% { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.05) translate(-1%, 2%); }
+}
+
+/* ── Container ─────────────────────────────────────────────────────────── */
+.container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 2rem;
+    position: relative;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+.header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.logo-icon {
+    font-size: 2.5rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.logo h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+/* ── Upload Area ───────────────────────────────────────────────────────── */
+.upload-section {
+    margin-bottom: 2rem;
+}
+
+.upload-area {
+    background: var(--bg-card);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: inherit;
+}
+
+.upload-area:hover,
+.upload-area.drag-over {
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+}
+
+.upload-area:hover::before,
+.upload-area.drag-over::before {
+    opacity: 0.04;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.upload-area h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.upload-area p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.file-types {
+    color: var(--text-muted) !important;
+    font-size: 0.8rem !important;
+    margin-top: 0.5rem;
+}
+
+.btn-upload {
+    margin-top: 1.25rem;
+    padding: 0.65rem 2rem;
+    background: var(--accent-gradient);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    letter-spacing: 0.3px;
+}
+
+.btn-upload:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(108, 99, 255, 0.35);
+}
+
+/* ── Preview Section ───────────────────────────────────────────────────── */
+.preview-section {
+    margin-bottom: 1.5rem;
+}
+
+.preview-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.preview-card img {
+    max-width: 100%;
+    max-height: 320px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    object-fit: contain;
+}
+
+.btn-new {
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-new:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+    background: rgba(108, 99, 255, 0.08);
+}
+
+/* ── Loader ────────────────────────────────────────────────────────────── */
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loader p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* ── Result Card ───────────────────────────────────────────────────────── */
+.results-section {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.result-icon {
+    font-size: 1.5rem;
+}
+
+.result-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.main-prediction h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.75rem;
+}
+
+.confidence-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.confidence-bar-container {
+    flex: 1;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.confidence-bar {
+    height: 100%;
+    border-radius: 6px;
+    background: var(--accent-gradient);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 0;
+}
+
+.confidence-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-secondary);
+    min-width: 52px;
+    text-align: right;
+}
+
+/* ── Top-5 Card ────────────────────────────────────────────────────────── */
+.top5-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.top5-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+.top5-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.top5-item:last-child {
+    border-bottom: none;
+}
+
+.top5-rank {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    min-width: 28px;
+}
+
+.top5-info {
+    flex: 1;
+}
+
+.top5-name {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.top5-bar-container {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.top5-bar {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent-gradient);
+    transition: width 0.6s ease;
+}
+
+.top5-pct {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 48px;
+    text-align: right;
+}
+
+/* ── Error Card ────────────────────────────────────────────────────────── */
+.error-card {
+    background: rgba(244, 67, 54, 0.08);
+    border: 1px solid rgba(244, 67, 54, 0.25);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    animation: fadeInUp 0.4s ease;
+}
+
+.error-icon {
+    font-size: 1.5rem;
+}
+
+.error-card p {
+    color: #ef9a9a;
+    font-size: 0.9rem;
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────── */
+.footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer p {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .container {
+        padding: 2rem 1rem 1.5rem;
+    }
+
+    .logo h1 {
+        font-size: 1.4rem;
+    }
+
+    .upload-area {
+        padding: 2rem 1.25rem;
+    }
+
+    .main-prediction h3 {
+        font-size: 1.15rem;
+    }
+}

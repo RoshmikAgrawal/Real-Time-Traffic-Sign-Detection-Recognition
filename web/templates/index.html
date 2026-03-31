@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Real-Time Traffic Sign Detection and Recognition using deep learning CNN model. Upload a traffic sign image for instant classification.">
+    <title>Traffic Sign Recognition — AI Classifier</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ─── Background Gradient Animation ─── -->
+    <div class="bg-gradient"></div>
+
+    <!-- ─── Main Container ─── -->
+    <div class="container">
+
+        <!-- ─── Header ─── -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🚦</span>
+                <h1>Traffic Sign Recognition</h1>
+            </div>
+            <p class="subtitle">AI-Powered Classification using Deep Learning (CNN)</p>
+        </header>
+
+        <!-- ─── Upload Section ─── -->
+        <section class="upload-section" id="upload-section">
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">📷</div>
+                <h2>Upload Traffic Sign Image</h2>
+                <p>Drag & drop an image here, or click to browse</p>
+                <p class="file-types">Supports: PNG, JPG, JPEG, PPM, BMP, WebP</p>
+                <input type="file" id="file-input" accept="image/*" hidden>
+                <button class="btn-upload" id="btn-browse">Browse Files</button>
+            </div>
+        </section>
+
+        <!-- ─── Preview Section (hidden initially) ─── -->
+        <section class="preview-section" id="preview-section" style="display: none;">
+            <div class="preview-card">
+                <img id="preview-image" src="" alt="Uploaded traffic sign">
+                <button class="btn-new" id="btn-new">Upload New Image</button>
+            </div>
+        </section>
+
+        <!-- ─── Loading Spinner ─── -->
+        <div class="loader" id="loader" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing traffic sign...</p>
+        </div>
+
+        <!-- ─── Results Section (hidden initially) ─── -->
+        <section class="results-section" id="results-section" style="display: none;">
+            <div class="result-card">
+                <div class="result-header">
+                    <span class="result-icon">✅</span>
+                    <h2>Prediction Result</h2>
+                </div>
+                <div class="main-prediction">
+                    <h3 id="predicted-name">—</h3>
+                    <div class="confidence-main">
+                        <div class="confidence-bar-container">
+                            <div class="confidence-bar" id="confidence-bar"></div>
+                        </div>
+                        <span class="confidence-text" id="confidence-text">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Top 5 Predictions ─── -->
+            <div class="top5-card">
+                <h3>Top 5 Predictions</h3>
+                <div class="top5-list" id="top5-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── Error Section ─── -->
+        <div class="error-card" id="error-card" style="display: none;">
+            <span class="error-icon">⚠️</span>
+            <p id="error-message">Something went wrong.</p>
+        </div>
+
+        <!-- ─── Footer ─── -->
+        <footer class="footer">
+            <p>Built with TensorFlow, OpenCV & Flask — Computer Vision BYOP</p>
+        </footer>
+    </div>
+
+    <!-- ─── JavaScript ─── -->
+    <script>
+        const uploadArea   = document.getElementById('upload-area');
+        const fileInput    = document.getElementById('file-input');
+        const btnBrowse    = document.getElementById('btn-browse');
+        const btnNew       = document.getElementById('btn-new');
+        const uploadSection  = document.getElementById('upload-section');
+        const previewSection = document.getElementById('preview-section');
+        const previewImage   = document.getElementById('preview-image');
+        const loader       = document.getElementById('loader');
+        const resultsSection = document.getElementById('results-section');
+        const errorCard    = document.getElementById('error-card');
+        const errorMessage = document.getElementById('error-message');
+
+        // ── Browse button ────────────────────────────────────────────
+        btnBrowse.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // ── Drag & Drop ──────────────────────────────────────────────
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFile(files[0]);
+        });
+
+        // ── File input change ────────────────────────────────────────
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
+
+        // ── New upload button ────────────────────────────────────────
+        btnNew.addEventListener('click', resetUI);
+
+        // ── Handle file upload ───────────────────────────────────────
+        function handleFile(file) {
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                uploadSection.style.display = 'none';
+                previewSection.style.display = 'block';
+                resultsSection.style.display = 'none';
+                errorCard.style.display = 'none';
+
+                // Send to server
+                uploadToServer(file);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ── Upload to server ─────────────────────────────────────────
+        async function uploadToServer(file) {
+            loader.style.display = 'flex';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                loader.style.display = 'none';
+
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    showError(data.error || 'Prediction failed.');
+                }
+            } catch (err) {
+                loader.style.display = 'none';
+                showError('Could not connect to server. Is the model trained?');
+            }
+        }
+
+        // ── Display results ──────────────────────────────────────────
+        function displayResults(data) {
+            document.getElementById('predicted-name').textContent = data.class_name;
+
+            const confidenceBar = document.getElementById('confidence-bar');
+            const confidenceText = document.getElementById('confidence-text');
+            const pct = data.confidence.toFixed(1);
+
+            confidenceBar.style.width = pct + '%';
+            confidenceBar.style.background = data.confidence > 80
+                ? 'linear-gradient(90deg, #4CAF50, #66BB6A)'
+                : data.confidence > 50
+                    ? 'linear-gradient(90deg, #FF9800, #FFB74D)'
+                    : 'linear-gradient(90deg, #F44336, #EF5350)';
+            confidenceText.textContent = pct + '%';
+
+            // Top 5
+            const top5List = document.getElementById('top5-list');
+            top5List.innerHTML = '';
+            data.top5.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'top5-item';
+                div.innerHTML = `
+                    <div class="top5-rank">#${index + 1}</div>
+                    <div class="top5-info">
+                        <span class="top5-name">[${item.class_id}] ${item.class_name}</span>
+                        <div class="top5-bar-container">
+                            <div class="top5-bar" style="width: ${item.confidence.toFixed(1)}%;"></div>
+                        </div>
+                    </div>
+                    <span class="top5-pct">${item.confidence.toFixed(1)}%</span>
+                `;
+                top5List.appendChild(div);
+            });
+
+            resultsSection.style.display = 'block';
+        }
+
+        // ── Show error ───────────────────────────────────────────────
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorCard.style.display = 'flex';
+        }
+
+        // ── Reset UI ─────────────────────────────────────────────────
+        function resetUI() {
+            uploadSection.style.display = 'block';
+            previewSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+            errorCard.style.display = 'none';
+            loader.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+</html>
