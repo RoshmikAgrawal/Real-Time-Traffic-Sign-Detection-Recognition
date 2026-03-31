@@ -1,6 +1,6 @@
-# TrafficSignGuard — Traffic Sign Detection System in Real Time
+# SignSightAI — Traffic Sign Detection System in Real Time
 
-TrafficSignGuard is a real-time computer vision system that detects and classifies German traffic signs (43 categories) using a web camera or uploaded images. It is equipped with a custom Convolutional Neural Network (CNN) that processes image shapes, colors, and contours independently, leading to strong, reliable real-time traffic sign classification.
+SignSightAI is a real-time computer vision system that detects and classifies German traffic signs (43 categories) using a web camera or uploaded images. It is equipped with a custom Convolutional Neural Network (CNN) that processes image shapes, colors, and contours independently, leading to strong, reliable real-time traffic sign classification.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.10+-FF6F00?logo=tensorflow&logoColor=white)
@@ -49,7 +49,7 @@ In a live webcam feed, the Region of Interest (ROI) is cropped, resized to `32x3
 ## Project Structure
 
 ```text
-TrafficSignGuard/
+SignSightAI/
 ├── src/
 │   ├── __init__.py        # Package marker
 │   ├── config.py          # All tunable parameters & constants

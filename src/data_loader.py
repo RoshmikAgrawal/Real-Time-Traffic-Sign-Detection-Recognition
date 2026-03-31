@@ -31,12 +31,13 @@ from src.config import (
 
 def load_image(image_path: str) -> np.ndarray:
     """
-    Load a single image, resize to (IMG_HEIGHT, IMG_WIDTH), and return
-    as a NumPy array with pixel values in [0, 255].
+    Load a single image, convert to RGB, resize to (IMG_HEIGHT, IMG_WIDTH), 
+    and return as a NumPy array with pixel values in [0, 255].
     """
-    img = Image.open(image_path)
+    img = Image.open(image_path).convert('RGB')
     img = img.resize((IMG_WIDTH, IMG_HEIGHT))
     return np.array(img)
+
 
 
 def preprocess_image(image: np.ndarray) -> np.ndarray:

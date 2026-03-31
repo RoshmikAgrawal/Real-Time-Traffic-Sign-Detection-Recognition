@@ -1,5 +1,5 @@
 # ============================================================================
-# app.py — Flask Web Application for Traffic Sign Recognition
+# app.py — Flask Web Application for SignSightAI
 # ============================================================================
 """
 A sleek web interface for uploading traffic sign images and viewing
@@ -163,7 +163,7 @@ def health_check():
 def run_web_app(host: str = '0.0.0.0', port: int = 5000, debug: bool = True):
     """Start the Flask web server."""
     print("\n" + "=" * 60)
-    print("  🌐 TRAFFIC SIGN RECOGNITION — WEB INTERFACE")
+    print("  🌐 SIGNSIGHTAI — WEB INTERFACE")
     print("=" * 60)
     print(f"  URL: http://localhost:{port}")
     print(f"  Press Ctrl+C to stop the server.")

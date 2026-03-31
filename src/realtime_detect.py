@@ -1,5 +1,5 @@
 # ============================================================================
-# realtime_detect.py — Real-Time Traffic Sign Detection via Webcam
+# realtime_detect.py — SignSightAI Real-Time Detection
 # ============================================================================
 """
 Uses OpenCV to capture video from the webcam and classify traffic signs
@@ -135,7 +135,7 @@ def run_webcam_detection() -> None:
                     FONT, 0.7, (255, 255, 255), 2)
 
         # ── Display Frame ────────────────────────────────────────────
-        cv2.imshow("Traffic Sign Detection — Press 'q' to Quit", frame)
+        cv2.imshow("SignSightAI — Press 'q' to Quit", frame)
 
         # ── Key Press Handling ───────────────────────────────────────
         key = cv2.waitKey(1) & 0xFF

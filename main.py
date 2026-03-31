@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # ============================================================================
-# main.py — Central Entry Point for Traffic Sign Recognition Project
+# main.py — Central Entry Point for SignSightAI Project
 # ============================================================================
 """
 Command-line interface to run all major project operations:
@@ -33,7 +33,7 @@ def print_banner():
     banner = """
     ╔══════════════════════════════════════════════════════════════╗
     ║                                                              ║
-    ║   🚦  REAL-TIME TRAFFIC SIGN DETECTION & RECOGNITION  🚦    ║
+    ║   🚦  SIGNSIGHTAI: REAL-TIME TRAFFIC SIGN DETECTION    🚦    ║
     ║                                                              ║
     ║   CNN-based classification of 43 traffic sign categories     ║
     ║   using the German Traffic Sign Recognition Benchmark        ║
