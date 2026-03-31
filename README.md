@@ -1,6 +1,6 @@
-# 🚦 Real-Time Traffic Sign Detection & Recognition
+# TrafficSignGuard — Traffic Sign Detection System in Real Time
 
-A deep learning-based system for detecting and classifying **43 categories** of traffic signs in real-time using Convolutional Neural Networks (CNN) and OpenCV — trained on the German Traffic Sign Recognition Benchmark (GTSRB).
+TrafficSignGuard is a real-time computer vision system that detects and classifies German traffic signs (43 categories) using a web camera or uploaded images. It is equipped with a custom Convolutional Neural Network (CNN) that processes image shapes, colors, and contours independently, leading to strong, reliable real-time traffic sign classification.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.10+-FF6F00?logo=tensorflow&logoColor=white)
@@ -10,229 +10,159 @@ A deep learning-based system for detecting and classifying **43 categories** of 
 
 ---
 
-## 📋 Problem Statement
+## Why does this matter?
 
-Traffic sign recognition is a critical component of **autonomous driving** and **Advanced Driver Assistance Systems (ADAS)**. Failure to detect and interpret traffic signs can lead to accidents, violations, and loss of life. This project builds a deep learning-based traffic sign classification system capable of recognizing **43 categories** of German traffic signs from images or live webcam feeds.
+Traffic sign recognition is a critical component of autonomous driving and Advanced Driver Assistance Systems (ADAS). In the real world, failure to detect and interpret traffic signs can lead to severe accidents, traffic violations, and loss of life. An inexpensive, camera-based automated sign recognition system reduces human error and paves the way for intelligent traffic management systems.
 
-## 💡 Motivation
-
-- **Road Safety**: ~1.35 million people die annually in road accidents globally (WHO). Automated sign recognition reduces human error.
-- **Autonomous Vehicles**: Essential perception module for self-driving cars (Tesla, Waymo, etc.).
-- **Accessibility**: Assists visually impaired or distracted drivers with real-time sign alerts.
-- **Smart Cities**: Enables intelligent traffic management and infrastructure monitoring.
-
-## ✨ Features
+## Features
 
 | Feature | Description |
 |---|---|
-| 🧠 **Custom CNN Model** | 3-block convolutional architecture with BatchNorm, Dropout, and Global Average Pooling |
-| 📊 **Complete Training Pipeline** | Data augmentation, EarlyStopping, ReduceLROnPlateau, ModelCheckpoint callbacks |
-| 📈 **Comprehensive Evaluation** | Confusion matrix, per-class accuracy, classification report, misclassified sample analysis |
-| 🔍 **Single Image Prediction** | Predict any traffic sign image with top-5 confidence scores and visualization |
-| 📹 **Real-Time Webcam Detection** | Live traffic sign classification via OpenCV with FPS counter and ROI overlay |
-| 🌐 **Web Application** | Modern Flask web UI with drag-and-drop upload, confidence bars, and top-5 results |
-| 📦 **Modular Codebase** | Clean, documented, production-ready code with clear separation of concerns |
+| **Custom CNN Classification** | Uses a 3-block convolutional architecture optimized for lightweight, real-time inference across 43 classes. |
+| **Real-Time Web Detection** | Tracks and classifies live video feed using OpenCV, automatically filtering results by confidence. |
+| **Smart Web Dashboard** | Modern, dark-themed Flask web UI with drag-and-drop upload and visual prediction confidence bars. |
+| **Complete Training Pipeline** | Includes integrated callbacks like EarlyStopping, ReduceLROnPlateau, and ModelCheckpoint alongside data augmentation. |
+| **Comprehensive Evaluation** | Generates confusion matrices, visualizes misclassified samples, and calculates per-class precision and recall. |
+| **Adjustable Configurations** | Tune image sizes, dataset properties, data augmentation logic, and training hyperparameters directly via `config.py`. |
 
-## 🛠️ Tech Stack
+## How It Works
 
-| Technology | Purpose |
-|---|---|
-| **Python 3.8+** | Core programming language |
-| **TensorFlow / Keras** | Deep learning framework (model building & training) |
-| **OpenCV** | Image processing & real-time webcam capture |
-| **NumPy / Pandas** | Numerical computation & data manipulation |
-| **Matplotlib / Seaborn** | Training curves, confusion matrices, data visualization |
-| **scikit-learn** | Classification metrics, train-test splitting |
-| **Flask** | Web demo interface with REST API |
-| **Pillow** | Image loading and preprocessing |
+### The Convolutional Neural Network (CNN)
 
-## 📁 Project Structure
+The network is designed specifically to capture visual elements indicative of traffic signs:
 
-```
-traffic-sign-recognition/
-│
-├── src/                          # Core source code
-│   ├── __init__.py               # Package initializer
-│   ├── config.py                 # Hyperparameters, paths, class labels
-│   ├── data_loader.py            # Dataset loading, preprocessing, augmentation
-│   ├── model.py                  # CNN architecture definition
-│   ├── train.py                  # Training pipeline with callbacks
-│   ├── evaluate.py               # Evaluation metrics & visualizations
-│   ├── predict.py                # Single image prediction with top-K
-│   ├── realtime_detect.py        # Webcam real-time detection (OpenCV)
-│   └── utils.py                  # Visualization helpers & dataset stats
-│
-├── web/                          # Flask web application
-│   ├── app.py                    # Flask routes & server
-│   ├── templates/
-│   │   └── index.html            # Web UI (drag-and-drop upload)
-│   └── static/
-│       └── style.css             # Modern dark-themed styling
-│
-├── dataset/                      # Dataset directory
-│   └── README.md                 # Download instructions for GTSRB
-│
-├── models/                       # Saved trained models
-│   └── .gitkeep
-│
-├── outputs/                      # Training plots, metrics, reports
-│   └── .gitkeep
-│
-├── main.py                       # CLI entry point (train/evaluate/predict/webcam/web)
-├── requirements.txt              # Python dependencies
-├── .gitignore                    # Git ignore rules
-└── README.md                     # This file
+*   **Low to Mid-level feature extraction:** The first two Conv2D blocks capture primal shapes (circles, triangles, octagons) and colors along with edge borders.
+*   **High-level feature extraction:** The third Conv2D block specifically focuses on sign-specific symbols and interior patterns (digits, pedestrian icons).
+
+The network finalizes classifications using **Global Average Pooling** (reducing parameter bloat) followed by fully connected layers and a Softmax output layer representing probabilities for each of the 43 sign categories.
+
+### Data Augmentation
+To simulate real-world environmental disruptions, the model receives altered images automatically during training using:
+*   Rotation (±15°)
+*   Height & Width shifts (10%)
+*   Shear & Zoom (up to 20%)
+*   Brightness corrections (0.8x to 1.2x)
+
+### Real-time Classification
+In a live webcam feed, the Region of Interest (ROI) is cropped, resized to `32x32`, normalized strictly to `0-1`, and run through the loaded `traffic_sign_model.keras` in milliseconds. The highest probability class above a strict confidence limit triggers the on-screen alert.
+
+## Project Structure
+
+```text
+TrafficSignGuard/
+├── src/
+│   ├── __init__.py        # Package marker
+│   ├── config.py          # All tunable parameters & constants
+│   ├── data_loader.py     # Dataset loading, preprocessing, augmentation
+│   ├── model.py           # CNN architecture definition
+│   ├── train.py           # Training pipeline
+│   ├── predict.py         # Single image inference
+│   ├── realtime_detect.py # OpenCV webcam integration
+│   ├── evaluate.py        # Confusion matrices & evaluation
+│   └── utils.py           # Utility scripts
+├── web/
+│   ├── app.py             # Flask Web Application logic
+│   ├── static/
+│   │   └── style.css      # Dark-themed GUI stylesheet
+│   └── templates/
+│       └── index.html     # Client-side web interface
+├── dataset/               # Auto-populates GTSRB structured dataset
+├── models/                # Saved trained Keras models
+├── outputs/               # Saved charts, graphs, and logs
+├── main.py                # Command Line Entry Point
+├── README.md              
+└── requirements.txt       # Python dependencies
 ```
 
-## 🚀 Installation
+## Getting Started
 
-### 1. Clone the Repository
+### Prerequisites
+*   Python 3.8+
+*   A working webcam (for live detection)
+*   Windows / macOS / Linux
 
+### Installation
+
+Clone the repository
 ```bash
-git clone https://github.com/<your-username>/traffic-sign-recognition.git
-cd traffic-sign-recognition
+git clone https://github.com/RoshmikAgrawal/Real-Time-Traffic-Sign-Detection-Recognition.git
+cd Real-Time-Traffic-Sign-Detection-Recognition
 ```
 
-### 2. Create a Virtual Environment (Recommended)
-
+Create virtual environment
 ```bash
-python -m venv .venv
-
+python -m venv venv
 # Windows
-.venv\Scripts\activate
-
+venv\Scripts\activate
 # macOS / Linux
-source .venv/bin/activate
+source venv/bin/activate
 ```
 
-### 3. Install Dependencies
-
+Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Download the Dataset
+*(Note: Data must be gathered prior to model training. See dataset execution scripts or run model evaluations as specified below).*
 
-Download the **GTSRB** dataset from one of these sources:
+## Running the Application
 
-- **Kaggle**: [GTSRB Dataset](https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign)
-- **Official**: [INI Benchmark](https://benchmark.ini.rub.de/gtsrb_dataset.html)
+There are multiple ways to operate this project. Start the Flask application GUI via:
 
-Extract into the `dataset/` directory. See [`dataset/README.md`](dataset/README.md) for detailed instructions.
-
-Expected structure after download:
-```
-dataset/
-├── Train/
-│   ├── 0/
-│   ├── 1/
-│   │   ...
-│   └── 42/
-├── Test/
-├── Train.csv
-└── Test.csv
-```
-
-## 📖 Usage
-
-All commands are run through `main.py`:
-
-### Train the Model
-```bash
-python main.py train
-```
-Trains the CNN on the GTSRB dataset with data augmentation. Saves the best model to `models/` and training curves to `outputs/`.
-
-### Evaluate the Model
-```bash
-python main.py evaluate
-```
-Generates a full evaluation report: confusion matrix, per-class accuracy, classification report, and misclassified sample visualization.
-
-### Predict a Single Image
-```bash
-python main.py predict path/to/traffic_sign.png
-```
-Classifies a single image and displays top-5 predictions with confidence scores.
-
-### Real-Time Webcam Detection
-```bash
-python main.py webcam
-```
-Opens the webcam feed and classifies traffic signs in real-time. Position a traffic sign in the green ROI box. Press **Q** to quit.
-
-### Web Application
 ```bash
 python main.py web
 ```
-Launches a Flask web app at `http://localhost:5000` with a drag-and-drop interface for uploading and classifying traffic sign images.
+The application will launch. Open a browser and navigate to `http://localhost:5000` to interact.
 
-### Model Summary
+Alternatively, to jump straight into active live-feed surveillance:
 ```bash
-python main.py summary
-```
-Prints the CNN architecture and parameter count.
-
-## 🧠 Model Architecture
-
-```
-TrafficSignNet — Custom CNN
-════════════════════════════════════════════
- Input: 32 × 32 × 3 (RGB)
-────────────────────────────────────────────
- Conv Block 1: 2×Conv2D(32) → BN → ReLU → MaxPool → Dropout(0.25)
- Conv Block 2: 2×Conv2D(64) → BN → ReLU → MaxPool → Dropout(0.25)
- Conv Block 3: 2×Conv2D(128) → BN → ReLU → MaxPool → Dropout(0.25)
-────────────────────────────────────────────
- Global Average Pooling
- Dense(256) → BN → ReLU → Dropout(0.5)
- Dense(128) → BN → ReLU → Dropout(0.3)
- Dense(43)  → Softmax
-════════════════════════════════════════════
+python main.py webcam
 ```
 
-**Key Design Choices:**
-- **BatchNormalization** after every layer stabilizes training
-- **Dropout** (0.25–0.5) prevents overfitting on underrepresented classes
-- **Global Average Pooling** reduces parameters compared to Flatten
-- **Data Augmentation**: rotation, zoom, shift, shear, brightness adjustments
+## Running Evaluations
 
-## 📊 Dataset Details
+To run the robust numerical testing and output comprehensive statistics of the model:
+```bash
+python main.py evaluate
+```
+This triggers the visual mapping sequence, calculating class loss metrics and pushing visual `.png` matrix reports to `outputs/`.
 
-**German Traffic Sign Recognition Benchmark (GTSRB)**
+## Configuration
 
-| Property | Value |
+You can adjust all thresholds directly in the `src/config.py` parameters list:
+
+| Parameter | Default | Description |
+|---|---|---|
+| `IMG_HEIGHT` \ `IMG_WIDTH` | 32 | Native dimensions the CNN accepts for prediction. |
+| `BATCH_SIZE` | 64 | Mini-batch sizing limit utilized for network updates per epoch. |
+| `EPOCHS` | 30 | Absolute cap count on training iterations over the dataset. |
+| `LEARNING_RATE` | 0.001 | Base iteration descent value assigned to the Adam optimizer. |
+| `VALIDATION_SPLIT` | 0.2 | Total fraction of data isolated exclusively for unbiased test loops. |
+| `NUM_CLASSES` | 43 | Total traffic categories the dataset supports and classifies. |
+
+*(Also supports explicit threshold shifts, rotation limiters, and hardware indices natively through related web modules).*
+
+## Tech Stack
+
+| Component | Technology |
 |---|---|
-| Training images | ~39,209 |
-| Test images | ~12,630 |
-| Number of classes | 43 |
-| Image format | PPM / PNG |
-| Image sizes | 15×15 to 250×250 (resized to 32×32) |
+| **Language** | Python 3.8+ |
+| **Deep Learning**| TensorFlow / Keras |
+| **Video Processing** | OpenCV |
+| **GUI & API** | Flask |
+| **Math & Data** | NumPy, Pandas |
+| **Metrics & Viz** | SciKit-Learn, Matplotlib, Seaborn |
 
-The 43 classes include speed limit signs, prohibition signs, warning signs, mandatory signs, and information signs.
+## License
 
-## 🔮 Future Improvements
+This project is licensed under the MIT License.
 
-- [ ] **Transfer Learning**: Use pretrained models (ResNet50, MobileNetV2) for improved accuracy
-- [ ] **Object Detection**: Integrate YOLO/SSD for traffic sign localization in full scenes
-- [ ] **Mobile Deployment**: Convert to TFLite for Android/iOS deployment
-- [ ] **Multi-Scale Detection**: Handle signs at various distances and scales
-- [ ] **Weather Robustness**: Train with synthetic rain, fog, and night augmentations
-- [ ] **Video Pipeline**: Process dashcam video files with tracking across frames
-- [ ] **Edge Deployment**: Optimize for Raspberry Pi / Jetson Nano
-- [ ] **Dataset Expansion**: Include signs from other countries (US, India, EU)
+## Author
 
-## 📜 References
+Roshmik Agrawal
 
-1. Stallkamp, J., Schlipsing, M., Salmen, J., & Igel, C. (2012). *Man vs. computer: Benchmarking machine learning algorithms for traffic sign recognition*. Neural Networks, 32, 323–332.
-2. GTSRB Benchmark: https://benchmark.ini.rub.de/gtsrb_dataset.html
-3. TensorFlow Documentation: https://www.tensorflow.org/
-4. OpenCV Documentation: https://docs.opencv.org/
-
-## 📝 License
-
-This project is developed as part of a **Computer Vision course (BYOP)**.
-
----
-
-**Built with** ❤️ **using TensorFlow, OpenCV & Flask**
+## Future Improvements
+*   Implement Transfer Learning (e.g., using a backbone like MobileNetV2) to achieve higher benchmark metrics
+*   Introduce Object Detection (YOLO/SSD) to locate the traffic sign within moving automotive sequences automatically
+*   Mobile deployment framework conversion through TFLite / ONNX formats
+*   Simulate varied weather (rain, fog, low light) locally for enhanced environmental robustness
